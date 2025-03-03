@@ -73,6 +73,7 @@ export class ChordParser {
       } else if (modifier === "add9") {
         return [rootNote, rootNote + 4, rootNote + 7, rootNote + 14];
       }
+      return [rootNote, rootNote + 4, rootNote + 7];
     } else if (type === "min" || type === "m") {
       if (modifier === "7") {
         return [rootNote, rootNote + 3, rootNote + 7, rootNote + 10];
@@ -87,30 +88,31 @@ export class ChordParser {
       } else if (modifier === "add9") {
         return [rootNote, rootNote + 3, rootNote + 7, rootNote + 14];
       }
+      return [rootNote, rootNote + 3, rootNote + 7];
     }
     throw new Error(`Unsupported chord: ${chord}`);
   }
 
   static noteToNumber(note: string): number {
     const noteMap = {
-        C: 0,
-        "C#": 1,
-        Db: 1,
-        D: 2,
-        "D#": 3,
-        Eb: 3,
-        E: 4,
-        F: 5,
-        "F#": 6,
-        Gb: 6,
-        G: 7,
-        "G#": 8,
-        Ab: 8,
-        A: 9,
-        "A#": 10,
-        Bb: 10,
-        B: 11,
-    }
+      C: 0,
+      "C#": 1,
+      Db: 1,
+      D: 2,
+      "D#": 3,
+      Eb: 3,
+      E: 4,
+      F: 5,
+      "F#": 6,
+      Gb: 6,
+      G: 7,
+      "G#": 8,
+      Ab: 8,
+      A: 9,
+      "A#": 10,
+      Bb: 10,
+      B: 11,
+    };
     const noteIndex = noteMap[note];
     if (noteIndex === undefined) {
       throw new Error(`Invalid note name: ${note}`);

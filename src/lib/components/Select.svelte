@@ -223,7 +223,7 @@
     padding: 0.5rem 0.75rem;
     background-color: rgb(0, 0, 0);
     border: 1px solid #ccc;
-    border-radius: 4px;
+    border-radius: 8px;
     cursor: pointer;
   }
 
@@ -249,7 +249,7 @@
     margin-top: 4px;
     background-color: rgb(44, 44, 44);
     border: 1px solid #ccc;
-    border-radius: 4px;
+    border-radius: 8px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     max-height: 200px;
     overflow-y: auto;

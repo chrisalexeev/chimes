@@ -1,6 +1,8 @@
 <script lang="ts">
+  import Icon from "./Icon.svelte";
+
   const {
-    variant = "primary", // primary, secondary, danger, success, warning
+    variant = "primary",
     size = "medium", // small, medium, large
     disabled = false,
     type = "button", // button, submit, reset
@@ -14,8 +16,16 @@
     form = null,
     tabindex = null,
     onClick = null,
+    style = "",
   }: {
-    variant?: string;
+    variant?:
+      | "primary"
+      | "secondary"
+      | "danger"
+      | "success"
+      | "warning"
+      | "basic"
+      | "outline";
     size?: string;
     disabled?: boolean;
     type?: "button" | "submit" | "reset";
@@ -29,7 +39,21 @@
     form?: string | null;
     tabindex?: number | null;
     onClick?: ((event: MouseEvent) => void) | null;
+    style?: string;
   } = $props();
+
+  let iconSize = $derived.by(() => {
+    switch (size) {
+      case "small":
+        return 16;
+      case "medium":
+        return 20;
+      case "large":
+        return 24;
+      default:
+        return 20;
+    }
+  });
 
   // Click handler
   function handleClick(event: MouseEvent) {
@@ -57,16 +81,24 @@
   {type}
   class={buttonClasses}
   {disabled}
-  on:click={handleClick}
+  onclick={handleClick}
   aria-label={ariaLabel}
   {id}
   {name}
   {value}
   {form}
   {tabindex}
+  {style}
 >
   {#if icon && iconPosition === "left"}
-    <span class="icon icon-left">{icon}</span>
+    <span class="icon icon-left"
+      ><Icon
+        width={iconSize}
+        height={iconSize}
+        name={icon}
+        color="white"
+      /></span
+    >
   {/if}
 
   <span class="btn-content">
@@ -74,7 +106,14 @@
   </span>
 
   {#if icon && iconPosition === "right"}
-    <span class="icon icon-right">{icon}</span>
+    <span class="icon icon-right"
+      ><Icon
+        width={iconSize}
+        height={iconSize}
+        name={icon}
+        color="white"
+      /></span
+    >
   {/if}
 </button>
 
@@ -175,6 +214,42 @@
     border-color: #d97706;
   }
 
+  .btn-basic {
+    background-color: transparent;
+    color: #1f2937;
+    border-color: transparent;
+  }
+  .btn-basic:hover:not(.btn-disabled) {
+    /* background-color: #f3f4f6; */
+    border-color: #d1d5db;
+  }
+  .btn-basic:focus {
+    /* background-color: #f3f4f6; */
+    border-color: #d1d5db;
+  }
+  .btn-basic:active {
+    /* background-color: #e5e7eb; */
+    border-color: #d1d5db;
+  }
+
+  .btn-outline {
+    background-color: transparent;
+    color: #d1d5db;
+    border-color: #d1d5db;
+  }
+  .btn-outline:hover:not(.btn-disabled) {
+    background-color: rgba(59, 130, 246, 0.1);
+    border-color: #d1d5db;
+  }
+  .btn-outline:focus {
+    background-color: rgba(59, 130, 246, 0.1);
+    border-color: #d1d5db;
+  }
+  .btn-outline:active {
+    background-color: rgba(59, 130, 246, 0.2);
+    border-color: #d1d5db;
+  }
+
   /* Disabled state */
   .btn-disabled {
     opacity: 0.5;
@@ -192,13 +267,13 @@
     align-items: center;
   }
 
-  .icon-left {
+  /* .icon-left {
     margin-right: 0.5rem;
   }
 
   .icon-right {
     margin-left: 0.5rem;
-  }
+  } */
 
   .btn-content {
     display: inline-flex;
