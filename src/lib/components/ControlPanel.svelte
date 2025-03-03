@@ -276,9 +276,14 @@
         {/if}
         <tr>
           <td>Notes:</td>
-          <td class="note-list">
+          <td class="note-list" style:box-shadow={
+            position === "right"
+              ? "inset -1px 1px #333"
+              : "inset 0px 1px #333"
+          }>
             {#each visState.noteNodes as note}
               <Note
+                panelPosition={position}
                 noteNumber={note.noteNumber}
                 velocity={note.velocity}
                 position={note.position}
@@ -424,7 +429,6 @@
     box-sizing: border-box;
     border-radius: 8px;
     border: solid 1px #000;
-    box-shadow: inset -1px 1px #333;
     display: flex;
     flex-wrap: wrap;
     align-items: center;

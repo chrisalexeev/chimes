@@ -9,6 +9,7 @@
     color = "black",
     // maxX = 100,
     // maxY = 100,
+    panelPosition = "right",
   }: {
     noteNumber: number;
     velocity: Velocity;
@@ -16,6 +17,7 @@
     color?: string;
     maxX?: number;
     maxY?: number;
+    panelPosition?: "left" | "right";
   } = $props();
 
   // let isEditing: boolean = $state(false);
@@ -41,7 +43,10 @@
   };
 </script>
 
-<div class="note-container">
+<div class="note-container"
+style:box-shadow={
+  panelPosition === "right" ? "-1px 1px #333" : "0px 1px #333"
+}>
   <div
     class="note-color"
     style={`background-color: ${color}`}
@@ -94,7 +99,6 @@
     align-items: center;
     padding: 0.5rem;
     border: 1px solid #1f1f1f;
-    box-shadow: -1px 1px #333;
     border-radius: 8px;
     margin-bottom: 0.5rem;
     gap: 0.5rem;
@@ -106,12 +110,12 @@
     height: 20px;
     border-radius: 50%;
     flex-shrink: 0;
-    cursor: pointer;
+    // cursor: pointer;
 
-    &:hover {
-      border: solid 2px #ccc;
-      box-sizing: border-box;
-    }
+    // &:hover {
+    //   border: solid 2px #ccc;
+    //   box-sizing: border-box;
+    // }
   }
 
   // .note-dx,
