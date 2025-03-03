@@ -37,7 +37,7 @@
       "A#",
       "B",
     ];
-    const octave = Math.floor(noteNumber / 12) - 1;
+    const octave = Math.floor(noteNumber / 12) - 2;
     const noteIndex = noteNumber % 12;
     return `${noteNames[noteIndex]}${octave}`;
   };

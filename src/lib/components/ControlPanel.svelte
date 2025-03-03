@@ -29,6 +29,8 @@
   let isDragging = $state(false);
   let initialX = 0;
   let initialWidth = 0;
+  let octave = $state(3);
+  let realOctave = $derived(octave + 2);
 
   $effect(() => {
     visState.canvasColor = canvasColor;
@@ -45,7 +47,7 @@
     if (visState.noteNodes.length === 0) {
       notes.forEach((note) => {
         const velocity = getRandomVelocity(speed);
-        visState.addNode(note + 60, velocity, getRandomColor());
+        visState.addNode(note + (realOctave * 12), velocity, getRandomColor());
       });
       return;
     }
@@ -54,9 +56,9 @@
     }
     notes.forEach((note, index) => {
       if (visState.noteNodes[index]) {
-        visState.noteNodes[index].noteNumber = note + 60;
+        visState.noteNodes[index].noteNumber = note + (realOctave * 12);
       } else {
-        visState.addNode(note + 60, getRandomVelocity(speed), getRandomColor());
+        visState.addNode(note + (realOctave * 12), getRandomVelocity(speed), getRandomColor());
       }
     });
   };
@@ -269,6 +271,35 @@
               </form>
             </td>
           </tr>
+          <tr>
+            <td>Octave:</td>
+            <td style="">
+              <Button
+                icon="minus"
+                onClick={() => {
+                  try {
+                    // TODO: this could probably be better
+                    octave = Math.max(-2, octave - 1);
+                    visState.shiftNotes(-12);
+                  } catch (e) {
+                    console.error("Error shifting notes:", e);
+                  }
+                }}
+              />
+              <Button
+                icon="plus"
+                onClick={() => {
+                  try {
+                    // TODO: this could probably be better
+                    octave = Math.min(8, octave + 1);
+                    visState.shiftNotes(12);
+                  } catch (e) {
+                    console.error("Error parsing chord:", e);
+                  }
+                }}
+              />
+            </td>
+          </tr>
         {:else}
           <tr>
             <td>Selection mode</td>
@@ -276,11 +307,12 @@
         {/if}
         <tr>
           <td>Notes:</td>
-          <td class="note-list" style:box-shadow={
-            position === "right"
+          <td
+            class="note-list"
+            style:box-shadow={position === "right"
               ? "inset -1px 1px #333"
-              : "inset 0px 1px #333"
-          }>
+              : "inset 0px 1px #333"}
+          >
             {#each visState.noteNodes as note}
               <Note
                 panelPosition={position}

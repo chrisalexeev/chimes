@@ -124,14 +124,15 @@
     justify-content: center;
     font-family: inherit;
     font-weight: 500;
-    border-radius: 0.375rem;
+    border-radius: 8px;
     cursor: pointer;
     transition:
       background-color 0.2s,
       border-color 0.2s,
       color 0.2s,
       box-shadow 0.2s;
-    border: 1px solid transparent;
+    border: 2px solid transparent;
+    box-shadow: 0 2px var(--color-primary-dark);
   }
 
   .btn:focus {
@@ -160,25 +161,25 @@
 
   /* Color variants */
   .btn-primary {
+    background-color: var(--color-primary);
+    color: white;
+    border-color: var(--color-primary-dark);
+  }
+
+  .btn-primary:hover:not(.btn-disabled) {
+    background-color: var(--color-primary-dark);
+    border-color: var(--color-primary-dark);
+  }
+
+  .btn-secondary {
     background-color: #3b82f6;
     color: white;
     border-color: #3b82f6;
   }
 
-  .btn-primary:hover:not(.btn-disabled) {
+  .btn-secondary:hover:not(.btn-disabled) {
     background-color: #2563eb;
     border-color: #2563eb;
-  }
-
-  .btn-secondary {
-    background-color: #e5e7eb;
-    color: #1f2937;
-    border-color: #e5e7eb;
-  }
-
-  .btn-secondary:hover:not(.btn-disabled) {
-    background-color: #d1d5db;
-    border-color: #d1d5db;
   }
 
   .btn-danger {

@@ -13,6 +13,22 @@
   -moz-osx-font-smoothing: grayscale;
 
   height: 100%;
+
+  --color-primary: #355a3b;
+  --color-primary-light: #4a6e4d;
+  --color-primary-dark: #2a3d2b;
+  --color-secondary: #f9f9f9;
+  --color-secondary-light: #ffffff;
+  --color-secondary-dark: #e0e0e0;
+  --color-accent: #ff4081;
+  --color-accent-light: #ff79b0;
+  --color-accent-dark: #c60055;
+  --color-background: #121212;
+  --color-background-light: #ffffff;
+  --color-background-dark: #000000;
+  --color-text: #ffffff;
+  --color-text-light: #000000;
+  --color-text-dark: #ffffff;
 }
 
 a {

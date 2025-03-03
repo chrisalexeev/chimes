@@ -225,4 +225,10 @@ export class VisState {
     this.isPaused = true;
     this.lastUpdateTime = performance.now();
   }
+
+  shiftNotes(steps: number) {
+    this.noteNodes.forEach((data) => {
+      data.noteNumber += steps;
+    });
+  }
 }
