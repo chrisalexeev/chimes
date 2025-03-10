@@ -18,11 +18,11 @@
     options: OptionType[];
     value?: string | number;
     placeholder?: string;
-    valueKey: string;
-    labelKey: string;
+    valueKey?: string;
+    labelKey?: string;
     disabled?: boolean;
     className?: string;
-    onchange: (event: CustomEvent) => void;
+    onchange?: (event: CustomEvent) => void;
   }>();
   // Internal state with runes
   let isOpen = $state(false);
@@ -156,7 +156,10 @@
   class="custom-select {className}"
   bind:this={containerElement}
   tabindex={options.findIndex(
-    (option: { [x: string]: any }) => option[valueKey] === value
+    (option: { [x: string]: any }) => {
+      
+      return option[valueKey] === value
+    }
   )}
   id={id}
   aria-label={id}
@@ -264,6 +267,10 @@
   .select-option:hover,
   .select-option.highlighted {
     background-color: #f7fafc;
+  }
+
+  .select-option:hover {
+    color: rgb(44, 44, 44);
   }
 
   .select-option.selected {

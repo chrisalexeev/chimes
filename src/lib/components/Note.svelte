@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { Velocity } from "../state.svelte";
-  // import Button from "./Button.svelte";
+  import { getNoteName } from "../utils";
+  import Button from "./Button.svelte";
 
   let {
     noteNumber,
@@ -10,6 +11,7 @@
     // maxX = 100,
     // maxY = 100,
     panelPosition = "right",
+    onRemove,
   }: {
     noteNumber: number;
     velocity: Velocity;
@@ -18,35 +20,18 @@
     maxX?: number;
     maxY?: number;
     panelPosition?: "left" | "right";
+    onRemove?: (e: MouseEvent) => void;
   } = $props();
 
   // let isEditing: boolean = $state(false);
-
-  const getNoteName: (noteNumber: number) => string = (noteNumber) => {
-    const noteNames = [
-      "C",
-      "C#",
-      "D",
-      "D#",
-      "E",
-      "F",
-      "F#",
-      "G",
-      "G#",
-      "A",
-      "A#",
-      "B",
-    ];
-    const octave = Math.floor(noteNumber / 12) - 2;
-    const noteIndex = noteNumber % 12;
-    return `${noteNames[noteIndex]}${octave}`;
-  };
 </script>
 
-<div class="note-container"
-style:box-shadow={
-  panelPosition === "right" ? "-1px 1px #333" : "0px 1px #333"
-}>
+<div
+  class="note-container"
+  style:box-shadow={panelPosition === "right"
+    ? "-1px 1px #333"
+    : "0px 1px #333"}
+>
   <div
     class="note-color"
     style={`background-color: ${color}`}
@@ -65,6 +50,18 @@ style:box-shadow={
     ariaLabel="Edit Note"
     style="padding: 0 2px"
   /> -->
+  {#if onRemove}
+    <Button
+      variant="basic"
+      size="small"
+      type="button"
+      onClick={onRemove}
+      icon="trash"
+      iconPosition="left"
+      ariaLabel="Edit Note"
+      style="padding: 0; margin-left: -4px"
+    />
+  {/if}
 </div>
 
 <!-- {#if isEditing}

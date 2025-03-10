@@ -6,10 +6,13 @@ export interface Velocity {
 }
 
 export class VisState {
+  private static staticId = 0;
+
   radius = $state(10);
   private interval = 10;
   private lastUpdateTime = 0;
   noteNodes: {
+    id: number;
     noteNumber: number;
     color?: string;
     velocity: Velocity;
@@ -37,6 +40,7 @@ export class VisState {
 
   addNode(noteNumber: number, startingVelocity: Velocity, color = "black") {
     this.noteNodes.push({
+      id: VisState.staticId++,
       noteNumber,
       velocity: startingVelocity,
       position: {
@@ -45,6 +49,11 @@ export class VisState {
       },
       color,
     });
+  }
+
+  removeNode(id: number) {
+    const idx = this.noteNodes.findIndex((value) => value.id === id);
+    this.noteNodes.splice(idx, 1);
   }
 
   clearNodes() {

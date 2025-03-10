@@ -29,7 +29,7 @@
 
   // Convert hex to RGB
   function hexToRgb(hex: string) {
-    console.log("hexToRgb called with:", hex);
+    
     const result = /^#?([a-fA-F\d]{2})([a-fA-F\d]{2})([a-fA-F\d]{2})$/i.exec(hex);
     return result
       ? {
@@ -42,7 +42,7 @@
 
   // Convert RGB to hex
   function rgbToHex(r: number, g: number, b: number) {
-    console.log("rgbToHex called with:", r, g, b);
+    
     return (
       "#" +
       ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase()
@@ -61,10 +61,10 @@
 
   // RGB sliders change the hex color
   $effect(() => {
-    console.log("effect called for RGB sliders");
+    
     const newColor = rgbToHex(r, g, b);
-    console.log("RGB values changed:", r, g, b);
-    console.log("New hex color:", newColor);
+    
+    
     color = newColor;
   });
 
@@ -129,7 +129,7 @@
     const y = event.clientY - rect.top;
 
     const pixel = canvasContext.getImageData(x, y, 1, 1).data;
-    console.log("Pixel data:", pixel);
+    
     r = pixel[0];
     g = pixel[1];
     b = pixel[2];

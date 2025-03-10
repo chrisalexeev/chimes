@@ -134,7 +134,7 @@
     border: 2px solid transparent;
   }
 
-  .btn:focus {........
+  .btn:focus {
     outline: 2px solid rgba(59, 130, 246, 0.5);
     outline-offset: 2px;
   }

@@ -2,7 +2,7 @@
   import { onMount } from "svelte";
   import { ChordParser } from "../chordParser";
   import type { VisState } from "../state.svelte";
-  import { getRandomColor, getRandomVelocity } from "../utils";
+  import { getNoteName, getRandomColor, getRandomVelocity } from "../utils";
   import Button from "./Button.svelte";
   import Select from "./Select.svelte";
   import Note from "./Note.svelte";
@@ -18,19 +18,28 @@
     isOpen?: boolean;
   } = $props();
 
-  let width = $state(500);
-  let noteMode: "chord" | "selection" = $state("chord");
-  let chord: string = $state("C");
-  let chordDebounce: number = $state(0);
-  let canvasWidth = $state(0);
-  let canvasHeight = $state(0);
-  let canvasColor = $state("FFFFFF");
-  let startingSpeed: number | string = $state(1.5);
+  let panelWidth = $state(500);
   let isDragging = $state(false);
   let initialX = 0;
   let initialWidth = 0;
-  let octave = $state(3);
-  let realOctave = $derived(octave + 2);
+  
+  let canvasWidth = $state(0);
+  let canvasHeight = $state(0);
+  let canvasColor = $state("FFFFFF");
+
+  let noteMode: "chord" | "selection" = $state("chord");
+  
+  let chord = $state("C");
+  let chordDebounce = $state(0);
+  let chordOctave = $state(3);
+  let realChordOctave = $derived(chordOctave + 2);
+  
+  let note = $state(0);
+  let realNote = $derived(note % 12);
+  let noteOctave = $state(3);
+  let realNoteOctave = $derived(noteOctave + 2);
+
+  let startingSpeed = $state(1.5);
 
   $effect(() => {
     visState.canvasColor = canvasColor;
@@ -47,7 +56,11 @@
     if (visState.noteNodes.length === 0) {
       notes.forEach((note) => {
         const velocity = getRandomVelocity(speed);
-        visState.addNode(note + (realOctave * 12), velocity, getRandomColor());
+        visState.addNode(
+          note + realChordOctave * 12,
+          velocity,
+          getRandomColor()
+        );
       });
       return;
     }
@@ -56,9 +69,13 @@
     }
     notes.forEach((note, index) => {
       if (visState.noteNodes[index]) {
-        visState.noteNodes[index].noteNumber = note + (realOctave * 12);
+        visState.noteNodes[index].noteNumber = note + realChordOctave * 12;
       } else {
-        visState.addNode(note + (realOctave * 12), getRandomVelocity(speed), getRandomColor());
+        visState.addNode(
+          note + realChordOctave * 12,
+          getRandomVelocity(speed),
+          getRandomColor()
+        );
       }
     });
   };
@@ -92,7 +109,7 @@
   const handleMouseDown = (e: MouseEvent) => {
     isDragging = true;
     initialX = e.clientX;
-    initialWidth = width;
+    initialWidth = panelWidth;
     e.preventDefault();
   };
 
@@ -102,7 +119,7 @@
     const deltaX =
       position === "right" ? initialX - e.clientX : e.clientX - initialX;
     const newWidth = initialWidth + deltaX * 2;
-    width = Math.max(Math.min(newWidth, 1200), 300); // Set maximum width to 800px
+    panelWidth = Math.max(Math.min(newWidth, 1200), 300); // Set maximum width to 800px
   };
 
   const handleMouseUp = () => {
@@ -113,7 +130,7 @@
 <div
   class="control-panel-container"
   style:border-radius={position === "right" ? "8px 0 0 8px" : "0 8px 8px 0"}
-  style:width={width + "px"}
+  style:width={panelWidth + "px"}
   style:display={!isOpen ? "none" : "flex"}
 >
   <!-- svelte-ignore a11y_no_static_element_interactions -->
@@ -150,7 +167,7 @@
           </td>
           <td>
             <div class="controller">
-              <span>{canvasWidth}px</span>
+              <span class="canvas-dimension">{canvasWidth}px</span>
               <input
                 type="range"
                 id="canvasWidth"
@@ -178,7 +195,7 @@
           </td>
           <td>
             <div class="controller">
-              <span>{canvasHeight}px</span>
+              <span class="canvas-dimension">{canvasHeight}px</span>
               <input
                 type="range"
                 id="canvasHeight"
@@ -251,9 +268,7 @@
                   oninput={(e) => {
                     chord = (e.target as HTMLInputElement).value;
                     clearTimeout(chordDebounce);
-                    chordDebounce = setTimeout(() => {
-                      console.log("Chord:", ChordParser.parseChord(chord));
-                    }, 500);
+                    chordDebounce = setTimeout(() => {}, 500);
                   }}
                   style="width: 100%;"
                 />
@@ -279,7 +294,7 @@
                 onClick={() => {
                   try {
                     // TODO: this could probably be better
-                    octave = Math.max(-2, octave - 1);
+                    chordOctave = Math.max(-2, chordOctave - 1);
                     visState.shiftNotes(-12);
                   } catch (e) {
                     console.error("Error shifting notes:", e);
@@ -291,7 +306,7 @@
                 onClick={() => {
                   try {
                     // TODO: this could probably be better
-                    octave = Math.min(8, octave + 1);
+                    chordOctave = Math.min(8, chordOctave + 1);
                     visState.shiftNotes(12);
                   } catch (e) {
                     console.error("Error parsing chord:", e);
@@ -302,7 +317,54 @@
           </tr>
         {:else}
           <tr>
-            <td>Selection mode</td>
+            <td>Add note:</td>
+            <td>
+              <form
+                action="javascript:void(0)"
+                style="width: 100%; display: flex; gap: 1rem;"
+              >
+                <Select
+                  id="noteSelection"
+                  bind:value={note}
+                  options={new Array(12).fill(0).map((_, i) => {
+                    return {
+                      value: i,
+                      label: getNoteName(i, false),
+                    };
+                  })}
+                  onchange={({ detail }) => {
+                    note = detail.value;
+                  }}
+                />
+                <input
+                  type="number"
+                  style="width: 100%;"
+                  min="-2"
+                  max="8"
+                  step="1"
+                  value={noteOctave}
+                  onchange={(e) => {
+                    noteOctave = Math.max(
+                      Math.min(
+                        8,
+                        parseInt((e.target as HTMLInputElement).value)
+                      ),
+                      -2
+                    );
+                  }}
+                />
+                <Button
+                  type="submit"
+                  onClick={() => {
+                    visState.addNode(
+                      realNote + realNoteOctave * 12,
+                      getRandomVelocity(startingSpeed),
+                      getRandomColor()
+                    );
+                  }}>Add</Button
+                >
+              </form></td
+            >
           </tr>
         {/if}
         <tr>
@@ -313,17 +375,35 @@
               ? "inset -1px 1px #333"
               : "inset 0px 1px #333"}
           >
-            {#each visState.noteNodes as note}
-              <Note
-                panelPosition={position}
-                noteNumber={note.noteNumber}
-                velocity={note.velocity}
-                position={note.position}
-                color={note.color}
-                maxX={canvasWidth}
-                maxY={canvasHeight}
-              />
-            {/each}
+            {#if noteMode === "chord"}
+              {#each visState.noteNodes as note}
+                <Note
+                  panelPosition={position}
+                  noteNumber={note.noteNumber}
+                  velocity={note.velocity}
+                  position={note.position}
+                  color={note.color}
+                  maxX={canvasWidth}
+                  maxY={canvasHeight}
+                />
+              {/each}
+            {:else if noteMode === "selection"}
+              {#each visState.noteNodes as note}
+                <Note
+                  panelPosition={position}
+                  noteNumber={note.noteNumber}
+                  velocity={note.velocity}
+                  position={note.position}
+                  color={note.color}
+                  maxX={canvasWidth}
+                  maxY={canvasHeight}
+                  onRemove={() => {
+                    console.log("here")
+                    visState.removeNode(note.id);
+                  }}
+                />
+              {/each}
+            {/if}
           </td>
         </tr>
       </tbody>
@@ -389,6 +469,14 @@
     cursor: col-resize;
     transition: background-color 0.2s;
 
+    &::before {
+      content: "||";
+      height: 100%;
+      display: flex;
+      align-items: center;
+      opacity: 0.5;
+    }
+
     &:hover,
     &:active {
       background-color: rgba(255, 255, 255, 0.1);
@@ -414,6 +502,8 @@
 
         span {
           font-family: monospace;
+          min-width: 3.8em;
+          max-width: 3.8em;
         }
       }
     }
@@ -422,6 +512,12 @@
     &.physics,
     &.canvas {
       flex-direction: column;
+    }
+
+    &.note {
+      input[type="number"] {
+        min-width: 2em;
+      }
     }
   }
 
